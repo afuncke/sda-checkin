@@ -1,25 +1,38 @@
-# CODING AGENTS: READ THIS FIRST
+# Quantified SD&A
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+A tiny live "wisdom of the crowd" ritual. Everyone anonymously drops one number about themselves into the box, optionally says what it is, and guesses the group average. The presenter then reveals the real distribution next to the guesses, the outlier, and a word cloud of what people described.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Run
 
-## What you should do — IMPORTANT
+Requires Node ≥ 22.13 (uses the built-in `node:sqlite`; no npm dependencies).
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+```sh
+npm start          # http://localhost:3000
+npm test
+```
 
-**Read `project/Wisdom of the Crowd.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+- **Vote view** (phones, laptops): `http://<host>:3000/`
+- **Presenter view** (semi-secret): `http://<host>:3000/#backstage-7k2`
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+## Configuration
 
-## About the design files
+| Env var | Default | |
+|---|---|---|
+| `PORT` | `3000` | |
+| `PRESENTER_KEY` | `backstage-7k2` | The presenter URL is `/#<key>`. Change it before running this anywhere public. |
+| `DB_FILE` | `data/wotc.db` | SQLite file. `:memory:` for throwaway runs. |
+| `SEED_DEMO` | unset | `1` fills the very first round with the 20-person demo crowd. |
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+The number of histogram bars is `BINS` at the top of `public/app.js` (default 8).
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## How it works
 
-## Bundle contents
+- `server.js` is a plain `node:http` server with SQLite storage. Clients get live updates over Server-Sent Events (`/api/events`).
+- Numbers stay sealed until the reveal: before then the API only exposes the count, so nobody can peek at the average before guessing.
+- Presenter actions (edit question, reveal, new round, demo crowd) require the `X-Presenter-Key` header, which the page takes from the URL hash.
+- Each voter remembers their own submission in `localStorage` to show the "Tack!" receipt. Starting a new round resets every voter to step 1.
+- Behind a reverse proxy, make sure response buffering is off for `/api/events` (the server already sends `X-Accel-Buffering: no` for nginx).
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Wisdom of the Crowd app` project files (HTML prototypes, assets, components)
+## Design source
+
+`project/Wisdom of the Crowd.dc.html` and `chats/` are the original Claude Design handoff this was built from.

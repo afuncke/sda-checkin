@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantified SD&amp;A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;800;900&family=Noto+Sans+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5F2EA;--ink:#141414;--blue:#0B4FA8;--yellow:#FFD23F;--muted:#6B665C;--ph:#A39D90;--white:#FFFFFF}
+[hidden]{display:none!important}
+*{-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--blue)}a:hover{color:var(--ink)}
+input,button{font-family:inherit;color:inherit}
+input::placeholder{color:var(--ph)}
+button{cursor:pointer}
+
+.page{min-height:100vh;display:flex;flex-direction:column;background:var(--paper)}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px clamp(16px,4vw,40px);border-bottom:3px solid var(--ink);background:var(--paper)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:34px;height:34px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-weight:900;font-size:18px}
+.brand-name{font-weight:900;font-size:20px;letter-spacing:-0.02em;text-transform:uppercase}
+
+.eyebrow{font:500 12px 'Noto Sans Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
+.cap{font:500 11px 'Noto Sans Mono',monospace;text-transform:uppercase;letter-spacing:0.08em}
+.muted{color:var(--muted)}
+
+/* ---------- vote ---------- */
+.vote{flex:1;display:flex;justify-content:center;padding:clamp(20px,6vw,56px) 16px}
+.vote-col{width:100%;max-width:440px;display:flex;flex-direction:column;gap:28px}
+.vote-prompt{font-weight:900;font-size:clamp(28px,7vw,38px);line-height:1.05;letter-spacing:-0.025em;margin-top:-18px;text-wrap:pretty;overflow-wrap:anywhere}
+.steps{display:flex;align-items:center;gap:8px}
+.step{display:flex;align-items:center;gap:8px}
+.dot{width:32px;height:32px;flex:none;border-radius:50%;border:2.5px solid var(--ink);box-sizing:content-box;display:flex;align-items:center;justify-content:center;font:700 14px 'Noto Sans Mono',monospace}
+.step-line{flex:1;height:2.5px;background:var(--ink)}
+.stack{display:flex;flex-direction:column;gap:20px}
+.q{font-weight:800;font-size:18px}
+.hint{font-size:15px;line-height:1.45;color:var(--muted);margin-top:-12px}
+.num-row{display:flex;align-items:center;gap:10px}
+.round-btn{width:56px;height:56px;flex:none;border-radius:50%;border:2.5px solid var(--ink);background:var(--white);font:800 26px 'Noto Sans';padding:0}
+.round-btn:active{background:var(--yellow)}
+.big-input{flex:1;min-width:0;text-align:center;font-weight:900;font-size:72px;letter-spacing:-0.04em;border:0;border-bottom:4px solid var(--ink);border-radius:0;background:transparent;padding:4px 0;outline:none}
+.big-input.blue{color:var(--blue)}
+.big-input.ink{color:var(--ink)}
+.text-input{font-size:20px;font-weight:600;border:2.5px solid var(--ink);border-radius:14px;background:var(--white);padding:16px;outline:none}
+.row{display:flex;gap:10px}
+.btn-primary{height:56px;border:0;border-radius:999px;background:var(--blue);color:var(--white);font:800 17px 'Noto Sans'}
+.btn-back{height:56px;padding:0 22px;border:2.5px solid var(--ink);border-radius:999px;background:transparent;font:800 16px 'Noto Sans'}
+.btn-drop{flex:1;height:56px;border:0;border-radius:999px;background:var(--yellow);color:var(--ink);font:900 17px 'Noto Sans'}
+.grow{flex:1}
+button:disabled{opacity:0.35}
+.card-tack{display:flex;flex-direction:column;gap:18px;border:3px solid var(--ink);border-radius:20px;background:var(--white);padding:28px}
+.tack{font-weight:900;font-size:40px;letter-spacing:-0.03em;color:var(--blue)}
+.body{font-size:16px;line-height:1.5}
+.receipt{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:2px dashed var(--ink);padding-top:18px}
+.receipt-num{font-weight:900;font-size:30px;overflow-wrap:anywhere}
+.card-closed{border:3px solid var(--ink);border-radius:20px;background:var(--yellow);padding:28px;display:flex;flex-direction:column;gap:10px}
+.closed-title{font-weight:900;font-size:28px;letter-spacing:-0.02em}
+.error{font-size:14px;font-weight:600;color:#B3261E;margin-top:-8px}
+
+/* ---------- presenter ---------- */
+.present{flex:1;display:flex;flex-direction:column;gap:28px;padding:clamp(20px,4vw,40px)}
+.present-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px}
+.prompt-wrap{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.prompt-input{width:100%;box-sizing:border-box;font-weight:900;font-size:clamp(28px,4vw,48px);letter-spacing:-0.03em;border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;outline:none;padding:0 0 4px}
+.prompt-input:focus{border-bottom-color:var(--ink)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-ghost{height:48px;padding:0 20px;border:2.5px solid var(--ink);border-radius:999px;background:transparent;font:700 14px 'Noto Sans'}
+.btn-reveal{height:48px;padding:0 26px;border:0;border-radius:999px;font:900 15px 'Noto Sans'}
+
+.waiting{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;border:3px solid var(--ink);border-radius:24px;background:var(--white);padding:48px 24px;text-align:center}
+.count{font-weight:900;font-size:clamp(96px,16vw,200px);line-height:0.9;letter-spacing:-0.05em;color:var(--blue)}
+.count-label{font-weight:800;font-size:22px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:560px}
+.chip{width:22px;height:22px;border-radius:5px;background:var(--yellow);border:2px solid var(--ink);box-sizing:content-box}
+.waiting-hint{font-size:15px;color:var(--muted);max-width:420px;line-height:1.5}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px}
+.stat{border:3px solid var(--ink);border-radius:18px;background:var(--white);padding:18px 20px}
+.stat.blue{background:var(--blue);color:var(--white)}
+.stat.blue .cap{opacity:0.85}
+.stat.yellow{background:var(--yellow)}
+.stat.white .cap{color:var(--muted)}
+.stat-num{font-weight:900;font-size:44px;letter-spacing:-0.03em}
+.verdict{font-weight:800;font-size:clamp(20px,2.4vw,28px);letter-spacing:-0.01em;text-wrap:pretty}
+
+.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:20px}
+.panel{border:3px solid var(--ink);border-radius:24px;background:var(--white);padding:24px;display:flex;flex-direction:column;min-width:0}
+.panel-title{font-weight:900;font-size:20px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.legend{display:flex;gap:16px;align-items:center;font-size:13px;font-weight:600;flex-wrap:wrap}
+.legend-item{display:flex;gap:6px;align-items:center}
+.swatch{width:14px;height:14px;border-radius:3px;box-sizing:border-box}
+.swatch.real{background:var(--blue)}
+.swatch.guess{background:var(--yellow);border:2px solid var(--ink)}
+.btn-pill{border:2px solid var(--ink);border-radius:999px;background:transparent;padding:4px 12px;font:700 12px 'Noto Sans'}
+.plot{position:relative;height:300px;display:flex;align-items:flex-end;border-bottom:3px solid var(--ink);margin-top:24px}
+.bin{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 3px;min-width:0}
+.bar{flex:1;max-width:34px;border-radius:6px 6px 0 0;position:relative;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.bar.real{background:var(--blue)}
+.bar.guess{background:var(--yellow);border:2px solid var(--ink);border-bottom:0;box-sizing:border-box}
+.bar-label{position:absolute;top:-20px;left:0;right:0;text-align:center;font:700 12px 'Noto Sans Mono',monospace}
+.bar.real .bar-label{color:var(--blue)}
+.bar.guess .bar-label{left:-4px;right:-4px}
+.avg-line{position:absolute;top:-24px;bottom:0;pointer-events:none}
+.avg-line.real{border-left:3px dashed var(--blue)}
+.avg-line.guess{border-left:3px dashed var(--ink)}
+.avg-tag{position:absolute;left:6px;white-space:nowrap;font:700 11px 'Noto Sans Mono',monospace}
+.avg-line.real .avg-tag{top:-4px;color:var(--blue);background:var(--white);padding:0 2px}
+.avg-line.guess .avg-tag{top:12px;background:var(--yellow);padding:0 3px}
+.axis{display:flex}
+.axis div{flex:1;min-width:0;text-align:center;font:500 11px 'Noto Sans Mono',monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.side{display:flex;flex-direction:column;gap:20px;min-width:0}
+.outlier{border:3px solid var(--ink);border-radius:24px;background:var(--ink);color:var(--paper);padding:24px;display:flex;align-items:center;gap:20px}
+.bang{width:64px;height:64px;flex:none;border-radius:50%;background:var(--yellow);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:30px}
+.outlier .cap{opacity:0.7}
+.outlier-title{font-weight:900;font-size:clamp(22px,2.6vw,30px);letter-spacing:-0.02em;line-height:1.15;overflow-wrap:anywhere}
+.outlier-desc{font-size:16px;opacity:0.85;margin-top:2px;overflow-wrap:anywhere}
+.cloud-panel{flex:1;gap:16px}
+.cloud{flex:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;align-content:center;gap:6px 16px;min-height:180px}
+.cloud span{letter-spacing:-0.02em;line-height:1.05}
+.cloud .empty{color:var(--muted);font-size:15px;letter-spacing:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">≈</div>
+      <div class="brand-name">Quantified SD&amp;A</div>
+    </div>
+  </header>
+
+  <!-- ===================== VOTE ===================== -->
+  <main id="vote" class="vote">
+    <div class="vote-col">
+      <div class="eyebrow">Temperature check</div>
+      <h1 id="vote-prompt" class="vote-prompt" style="margin-bottom:0"></h1>
+
+      <div id="steps" class="steps" aria-hidden="true"></div>
+
+      <form id="step1" class="stack" novalidate>
+        <label for="value" class="q">Your number. Only you know it’s yours.</label>
+        <div class="num-row">
+          <button type="button" id="dec" class="round-btn" aria-label="Minus one">−</button>
+          <input id="value" class="big-input blue" inputmode="decimal" placeholder="0" autocomplete="off">
+          <button type="button" id="inc" class="round-btn" aria-label="Plus one">+</button>
+        </div>
+        <button type="submit" id="next1" class="btn-primary">Next</button>
+      </form>
+
+      <form id="step2" class="stack" novalidate hidden>
+        <label for="desc" class="q">What is <span id="value-echo" style="color:var(--blue)"></span>? <span style="font-weight:400" class="muted">Optional.</span></label>
+        <input id="desc" class="text-input" maxlength="60" placeholder="hours slept, coffees, unread emails…" autocomplete="off">
+        <div class="row">
+          <button type="button" class="btn-back" data-back>Back</button>
+          <button type="submit" class="btn-primary grow">Next</button>
+        </div>
+      </form>
+
+      <form id="step3" class="stack" novalidate hidden>
+        <label for="guess" class="q">Now guess the group’s average.</label>
+        <div class="hint">Everyone picked their own number about themselves. What do they add up to, on average?</div>
+        <input id="guess" class="big-input ink" inputmode="decimal" placeholder="?" autocomplete="off">
+        <div id="submit-error" class="error" hidden></div>
+        <div class="row">
+          <button type="button" class="btn-back" data-back>Back</button>
+          <button type="submit" id="submit" class="btn-drop">Drop it in the box</button>
+        </div>
+      </form>
+
+      <div id="submitted" class="card-tack" hidden>
+        <div class="tack">Tack!</div>
+        <div class="body">Your number is in. Watch the big screen for the reveal.</div>
+        <div class="receipt">
+          <div><div class="cap muted">You said</div><div id="my-value" class="receipt-num"></div></div>
+          <div><div class="cap muted">You guessed</div><div id="my-guess" class="receipt-num"></div></div>
+        </div>
+      </div>
+
+      <div id="closed" class="card-closed" hidden>
+        <div class="closed-title">The box is closed.</div>
+        <div class="body">Results are on the big screen. That’s such a good number. Thank you, you’ll do good in life!</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== PRESENTER ===================== -->
+  <main id="present" class="present" hidden>
+    <div class="present-top">
+      <div class="prompt-wrap">
+        <label for="prompt-input" class="eyebrow">Question · edit to change</label>
+        <input id="prompt-input" class="prompt-input" maxlength="200" autocomplete="off">
+      </div>
+      <div class="actions">
+        <button id="new-round" class="btn-ghost">New round</button>
+        <button id="demo" class="btn-ghost">Demo crowd</button>
+        <button id="reveal" class="btn-reveal"></button>
+      </div>
+    </div>
+
+    <div id="waiting" class="waiting">
+      <div id="count" class="count">0</div>
+      <div class="count-label"><span id="count-label">numbers</span> in the box</div>
+      <div id="chips" class="chips"></div>
+      <div class="waiting-hint">Open the Vote view on a phone or laptop. Hit Reveal when everyone’s in.</div>
+    </div>
+
+    <div id="results" hidden style="display:contents">
+      <div class="stats">
+        <div class="stat blue"><div class="cap">Real average</div><div id="real-mean" class="stat-num"></div></div>
+        <div class="stat yellow"><div class="cap">Crowd’s guess</div><div id="guess-mean" class="stat-num"></div></div>
+        <div class="stat white"><div class="cap">Off by</div><div id="err-pct" class="stat-num"></div></div>
+        <div class="stat white"><div class="cap">Median</div><div id="real-median" class="stat-num"></div></div>
+      </div>
+      <div id="verdict" class="verdict"></div>
+
+      <div class="panels">
+        <div class="panel" style="gap:18px">
+          <div class="chart-head">
+            <div class="panel-title">Distribution</div>
+            <div class="legend">
+              <div class="legend-item"><div class="swatch real"></div>Real numbers</div>
+              <div class="legend-item"><div class="swatch guess"></div>Guesses</div>
+              <button id="toggle-outlier" class="btn-pill" hidden></button>
+            </div>
+          </div>
+          <div id="plot" class="plot">
+            <div id="bins" style="display:contents"></div>
+            <div id="real-line" class="avg-line real"><div class="avg-tag">avg <span id="real-line-label"></span></div></div>
+            <div id="guess-line" class="avg-line guess"><div class="avg-tag">guess <span id="guess-line-label"></span></div></div>
+          </div>
+          <div id="axis" class="axis"></div>
+        </div>
+
+        <div class="side">
+          <div id="outlier" class="outlier" hidden>
+            <div class="bang">!</div>
+            <div style="min-width:0">
+              <div class="cap">Who’s the outlier?</div>
+              <div class="outlier-title">Someone said <span id="outlier-value"></span></div>
+              <div id="outlier-desc" class="outlier-desc"></div>
+            </div>
+          </div>
+          <div class="panel cloud-panel">
+            <div class="panel-title">What’s on our minds</div>
+            <div id="cloud" class="cloud"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

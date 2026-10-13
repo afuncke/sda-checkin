@@ -1,0 +1,14 @@
+{
+  "name": "quantified-sda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wisdom of the Crowd: everyone submits a number, guesses the group average, then the reveal.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}
